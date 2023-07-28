@@ -161,6 +161,8 @@ func (m UserModel) GetForToken(tokenScope, tokenPlaintext string) (*User, error)
 	return &user, nil
 }
 
+var AnonymousUser = &User{}
+
 type User struct {
 	ID        int64     `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
@@ -200,6 +202,10 @@ func (p *password) Matches(plaintextPassword string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (u *User) isAnonymous() bool {
+	return u == AnonymousUser
 }
 
 func ValidateEmail(v *validator.Validator, email string) {
