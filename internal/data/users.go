@@ -204,7 +204,7 @@ func (p *password) Matches(plaintextPassword string) (bool, error) {
 	return true, nil
 }
 
-func (u *User) isAnonymous() bool {
+func (u *User) IsAnonymous() bool {
 	return u == AnonymousUser
 }
 
