@@ -119,7 +119,7 @@ func (um UserModel) Update(user *User) error {
 	return nil
 }
 
-func (m UserModel) GetForToken(tokenScope, tokenPlaintext string) (*User, error) {
+func (um UserModel) GetForToken(tokenScope, tokenPlaintext string) (*User, error) {
 	tokenHash := sha256.Sum256([]byte(tokenPlaintext))
 
 	query := `
@@ -139,7 +139,7 @@ func (m UserModel) GetForToken(tokenScope, tokenPlaintext string) (*User, error)
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	err := m.DB.QueryRowContext(ctx, query, args...).Scan(
+	err := um.DB.QueryRowContext(ctx, query, args...).Scan(
 		&user.ID,
 		&user.CreatedAt,
 		&user.Name,
