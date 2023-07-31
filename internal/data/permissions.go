@@ -3,11 +3,13 @@ package data
 import (
 	"context"
 	"database/sql"
+	"github.com/lib/pq"
 	"time"
 )
 
 type PermissionsModelInterface interface {
 	GetAllForUser(userID int64) (Permissions, error)
+	AddForUser(userID int64, codes ...string) error
 }
 
 var _ PermissionsModelInterface = PermissionModel{}
@@ -25,6 +27,19 @@ func (p Permissions) Include(code string) bool {
 
 type PermissionModel struct {
 	DB *sql.DB
+}
+
+func (pm PermissionModel) AddForUser(userID int64, codes ...string) error {
+	query := `
+		insert into users_permissions
+		select $1, permissions.id from permissions where permissions.code = any($2)
+	`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	_, err := pm.DB.ExecContext(ctx, query, userID, pq.Array(codes))
+	return err
 }
 
 func (pm PermissionModel) GetAllForUser(userID int64) (Permissions, error) {
