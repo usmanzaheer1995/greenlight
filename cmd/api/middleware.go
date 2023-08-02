@@ -7,12 +7,13 @@ import (
 	"github.com/usmanzaheer1995/greenlight/internal/data"
 	"github.com/usmanzaheer1995/greenlight/internal/validator"
 	"golang.org/x/time/rate"
-	"net"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/tomasen/realip"
 )
 
 func (app *application) recoverPanic(next http.Handler) http.Handler {
@@ -59,11 +60,7 @@ func (app *application) rateLimit(next http.Handler) http.Handler {
 
 		if app.config.limiter.enabled {
 
-			ip, _, err := net.SplitHostPort(r.RemoteAddr)
-			if err != nil {
-				app.serverErrorResponse(w, r, err)
-				return
-			}
+			ip := realip.FromRequest(r)
 
 			mu.Lock()
 
