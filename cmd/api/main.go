@@ -5,14 +5,15 @@ import (
 	"database/sql"
 	"expvar"
 	"flag"
-	"github.com/usmanzaheer1995/greenlight/internal/data"
-	"github.com/usmanzaheer1995/greenlight/internal/jsonlog"
-	"github.com/usmanzaheer1995/greenlight/internal/mailer"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/usmanzaheer1995/greenlight/internal/data"
+	"github.com/usmanzaheer1995/greenlight/internal/jsonlog"
+	"github.com/usmanzaheer1995/greenlight/internal/mailer"
 
 	_ "github.com/lib/pq"
 )

@@ -4,14 +4,15 @@ import (
 	"errors"
 	"expvar"
 	"fmt"
-	"github.com/usmanzaheer1995/greenlight/internal/data"
-	"github.com/usmanzaheer1995/greenlight/internal/validator"
-	"golang.org/x/time/rate"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/usmanzaheer1995/greenlight/internal/data"
+	"github.com/usmanzaheer1995/greenlight/internal/validator"
+	"golang.org/x/time/rate"
 
 	"github.com/tomasen/realip"
 )

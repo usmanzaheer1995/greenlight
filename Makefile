@@ -27,6 +27,8 @@ run/api:
 .PHONY: db/migrations/up
 db/migrations/up: confirm
 	@echo 'Running up migrations...'
+	@podman compose exec postgres psql -U postgres -d greenlight -c "CREATE ROLE greenlight WITH LOGIN PASSWORD 'secret';"
+	@podman compose exec postgres psql -U postgres -d greenlight -c "CREATE EXTENSION IF NOT EXISTS citext;"
 	@migrate -path ./migrations -database ${GREENLIGHT_DB_DSN} up
 
 ## db/migrations/new name=$1: create a new database migration
