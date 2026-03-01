@@ -3,17 +3,23 @@ package mailer
 import (
 	"bytes"
 	"embed"
-	"github.com/go-mail/mail/v2"
 	"html/template"
 	"time"
+
+	"github.com/go-mail/mail/v2"
 )
 
 //go:embed "templates"
 var templateFS embed.FS
 
+type dialer interface {
+	DialAndSend(msgs ...*mail.Message) error
+}
+
 type Mailer struct {
-	dialer *mail.Dialer
-	sender string
+	dialer     dialer
+	sender     string
+	retryDelay time.Duration
 }
 
 func New(host string, port int, username, password, sender string) Mailer {
@@ -21,8 +27,9 @@ func New(host string, port int, username, password, sender string) Mailer {
 	dialer.Timeout = 5 * time.Second
 
 	return Mailer{
-		dialer: dialer,
-		sender: sender,
+		dialer:     dialer,
+		sender:     sender,
+		retryDelay: 500 * time.Millisecond,
 	}
 }
 
@@ -65,7 +72,7 @@ func (m Mailer) Send(recipient, templateFile string, data any) error {
 		}
 
 		// If it didn't work, sleep for a short time and retry.
-		time.Sleep(500 * time.Millisecond)
+		time.Sleep(m.retryDelay)
 	}
 
 	return err
