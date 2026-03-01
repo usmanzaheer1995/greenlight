@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/lib/pq"
 	"time"
+
+	"github.com/lib/pq"
 
 	"github.com/usmanzaheer1995/greenlight/internal/validator"
 )
@@ -144,7 +145,11 @@ func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*M
 	query := fmt.Sprintf(`
 		SELECT count(*) over(), id, created_at, title, year, runtime, genres, version
 		FROM movies
-		WHERE (to_tsvector('simple', title) @@ plainto_tsquery('simple', $1) OR $1 = '')
+		WHERE (
+			CASE WHEN $1 = '' THEN true
+				 ELSE to_tsvector('simple', title) @@ to_tsquery('simple', $1 || ':*')
+			END
+		)
 		AND (genres @> $2 OR $2 = '{}')
 		ORDER BY %s %s, id ASC
 		LIMIT $3 OFFSET $4
@@ -153,6 +158,9 @@ func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*M
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
+	if genres == nil {
+		genres = []string{}
+	}
 	args := []any{title, pq.Array(genres), filters.limit(), filters.offset()}
 
 	rows, err := m.DB.QueryContext(ctx, query, args...)
