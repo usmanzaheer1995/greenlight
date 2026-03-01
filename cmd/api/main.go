@@ -24,6 +24,12 @@ var (
 	version = vcs.Version()
 )
 
+type limiter struct {
+	rps     float64
+	burst   int
+	enabled bool
+}
+
 type config struct {
 	port int
 	env  string
@@ -33,12 +39,8 @@ type config struct {
 		maxIdleConns int
 		maxIdleTime  string
 	}
-	limiter struct {
-		rps     float64
-		burst   int
-		enabled bool
-	}
-	smtp struct {
+	limiter limiter
+	smtp    struct {
 		host     string
 		port     int
 		username string
