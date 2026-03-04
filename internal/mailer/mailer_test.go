@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/go-mail/mail/v2"
+	"github.com/usmanzaheer1995/greenlight/internal/assert"
 )
 
 type mockDialer struct {
@@ -35,9 +36,8 @@ func TestMailer_Send_HappyPath(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected no error, got: %v", err)
 	}
-	if mock.callCount != 1 {
-		t.Errorf("expected 1 dial attempt, got %d", mock.callCount)
-	}
+
+	assert.Equal(t, mock.callCount, 1)
 }
 
 func TestMailer_Send_RetriesAndSucceeds(t *testing.T) {
@@ -51,9 +51,8 @@ func TestMailer_Send_RetriesAndSucceeds(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected no error after retry, got: %v", err)
 	}
-	if mock.callCount != 3 {
-		t.Errorf("expected 3 dial attempts, got %d", mock.callCount)
-	}
+
+	assert.Equal(t, mock.callCount, 3)
 }
 
 func TestMailer_Send_AllRetriesExhausted(t *testing.T) {
@@ -67,9 +66,8 @@ func TestMailer_Send_AllRetriesExhausted(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error after all retries, got nil")
 	}
-	if mock.callCount != 3 {
-		t.Errorf("expected 3 dial attempts, got %d", mock.callCount)
-	}
+
+	assert.Equal(t, mock.callCount, 3)
 }
 
 func TestMailer_Send_BadTemplateName(t *testing.T) {
@@ -80,7 +78,6 @@ func TestMailer_Send_BadTemplateName(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for bad template name, got nil")
 	}
-	if mock.callCount != 0 {
-		t.Errorf("expected 0 dial attempts for template error, got %d", mock.callCount)
-	}
+
+	assert.Equal(t, mock.callCount, 0)
 }

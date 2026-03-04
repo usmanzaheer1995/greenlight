@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/usmanzaheer1995/greenlight/internal/assert"
 	"github.com/usmanzaheer1995/greenlight/internal/jsonlog"
 )
 
@@ -88,9 +89,7 @@ func TestRateLimit(t *testing.T) {
 			req.RemoteAddr = "192.168.1.1:1234"
 			handler.ServeHTTP(rr, req)
 
-			if rr.Code != http.StatusOK {
-				t.Errorf("request %d: expected status: %d, actual: %d", i, http.StatusOK, rr.Code)
-			}
+			assert.Equal(t, rr.Code, http.StatusOK)
 		}
 	})
 
@@ -118,9 +117,7 @@ func TestRateLimit(t *testing.T) {
 			req.RemoteAddr = "192.168.1.2:1234"
 			handler.ServeHTTP(rr, req)
 
-			if rr.Code != http.StatusOK {
-				t.Errorf("request %d: got status %d, want %d", i, rr.Code, http.StatusOK)
-			}
+			assert.Equal(t, rr.Code, http.StatusOK)
 		}
 	})
 
@@ -198,8 +195,6 @@ func TestRateLimit(t *testing.T) {
 		req.RemoteAddr = "10.0.0.2:1234"
 		handler.ServeHTTP(rr, req)
 
-		if rr.Code != http.StatusOK {
-			t.Errorf("independent IP got status %d, want %d", rr.Code, http.StatusOK)
-		}
+		assert.Equal(t, rr.Code, http.StatusOK)
 	})
 }

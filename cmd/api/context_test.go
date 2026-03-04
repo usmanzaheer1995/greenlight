@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/usmanzaheer1995/greenlight/internal/assert"
 	"github.com/usmanzaheer1995/greenlight/internal/data"
 )
 
@@ -21,9 +22,7 @@ func TestContextSetUser(t *testing.T) {
 	req = app.contextSetUser(req, user)
 
 	result := req.Context().Value(userContextKey).(*data.User)
-	if result != user {
-		t.Error("contextSetUser: retrieved user does not match the one that was set")
-	}
+	assert.Equal(t, result, user)
 }
 
 func TestContextGetUser(t *testing.T) {
@@ -40,9 +39,8 @@ func TestContextGetUser(t *testing.T) {
 		req = app.contextSetUser(req, user)
 
 		retrievedUser := app.contextGetUser(req)
-		if retrievedUser != user {
-			t.Error("contextGetUser: retrieved user does not match the one that was set")
-		}
+
+		assert.Equal(t, retrievedUser, user)
 	})
 
 	t.Run("handles anonymous user", func(t *testing.T) {
@@ -51,9 +49,7 @@ func TestContextGetUser(t *testing.T) {
 
 		retrievedUser := app.contextGetUser(req)
 
-		if !retrievedUser.IsAnonymous() {
-			t.Error("expected anonymous user")
-		}
+		assert.Equal(t, retrievedUser.IsAnonymous(), false)
 	})
 
 	t.Run("panics when user not set", func(t *testing.T) {
